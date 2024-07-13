@@ -1,30 +1,36 @@
-using UnityEngine;
-
 namespace UniMediator
 {
-    [RequireComponent(typeof(MediatorImpl))]
-    public sealed class Mediator : MonoBehaviour
+    public sealed class Mediator
     {
         private static IMediator _mediator;
 
-        private void Awake()
+        public Mediator()
         {
-            _mediator = GetComponent<MediatorImpl>();
+            
         }
         
         public static void Publish(IMulticastMessage message)
         {
+            InitDefaultImplementation();
             _mediator.Publish(message);
         }
 
+        private static void InitDefaultImplementation()
+        {
+            if (_mediator == null)
+            {
+                _mediator = new MediatorImpl();
+            }
+        }
         public static T Send<T>(ISingleMessage<T> message)
         {
+            InitDefaultImplementation();
             return _mediator.Send(message);
         }
-        
-        public static void AddMediatedObject(MonoBehaviour monoBehaviour)
+
+        public static void InjectImplementation(IMediator mediatorImpl)
         {
-            _mediator.AddMediatedObject(monoBehaviour);
+            _mediator = mediatorImpl;
         }
     }
 }

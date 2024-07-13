@@ -46,7 +46,7 @@ namespace UniMediator.Internal
             _handlers[key].Invoke(message);
         }
 
-        public Action<IMulticastMessage> CacheHandler(Type messageType, MonoBehaviour instance, MethodInfo method)
+        public Action<IMulticastMessage> CacheHandler(Type messageType, object instance, MethodInfo method)
         {
             var handler = DelegateFactory.CreateMultiCastHandler(messageType, instance, method);
 

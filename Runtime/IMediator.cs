@@ -19,12 +19,5 @@ namespace UniMediator
         /// </summary>
         /// <param name="message">The message object</param>
         void Publish(IMulticastMessage message);
-        
-        /// <summary>
-        /// Registers a MonoBehavior with the Mediator. This is only necessary if
-        /// an object is instantiated manually after the scene has loaded
-        /// </summary>
-        /// <param name="monoBehaviour"></param>
-        void AddMediatedObject(MonoBehaviour monoBehaviour);
     }
 }
