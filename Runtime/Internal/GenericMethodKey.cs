@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal struct GenericMethodKey : IEquatable<GenericMethodKey>
     {

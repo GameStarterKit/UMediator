@@ -1,4 +1,4 @@
-namespace UniMediator
+namespace Packages.UMediator.Runtime
 {
     public sealed class Mediator
     {

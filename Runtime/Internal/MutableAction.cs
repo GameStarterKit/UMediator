@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using UnityEngine;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     // Because in this use case many delegates will be added/removed quickly
     // one after the other, immutable delegates aren't ideal for Unity

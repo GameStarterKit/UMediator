@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class MulticastMessageHandlerCache
     {

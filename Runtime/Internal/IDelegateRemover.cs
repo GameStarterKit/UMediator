@@ -1,4 +1,4 @@
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal interface IDelegateRemover
     {

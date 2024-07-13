@@ -1,8 +1,4 @@
-﻿using System;
-using UnityEngine;
-using Object = UnityEngine.Object;
-
-namespace UniMediator
+﻿namespace Packages.UMediator.Runtime
 {
     public interface IMediator
     {

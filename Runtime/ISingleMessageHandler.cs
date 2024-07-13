@@ -1,4 +1,4 @@
-namespace UniMediator
+namespace Packages.UMediator.Runtime
 {
     /// <summary>
     /// Defines a Handler for a message of type <see cref="ISingleMessage{T}"/> 

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using JetBrains.Annotations;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     // Extension methods that cache the results of reflection operations.
     // Significantly improves performance if multiple instances of the 

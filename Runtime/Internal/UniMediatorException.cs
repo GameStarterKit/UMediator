@@ -1,6 +1,6 @@
 using System;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     public class UniMediatorException : Exception
     {

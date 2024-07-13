@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class ActiveObjectTracker
     {

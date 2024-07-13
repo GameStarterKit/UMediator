@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEngine;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class SingleMessageHandlerCache
     {
@@ -59,7 +58,7 @@ namespace UniMediator.Internal
         public void CacheHandler(
             Type messageType,
             Type returnType,
-            MonoBehaviour instance, 
+            object instance, 
             MethodInfo method)
         {
             var handler = DelegateFactory.CreateSingleMessageHandler(messageType, returnType, instance, method);

@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
-using UniMediator.Internal;
+using Packages.UMediator.Runtime.Internal;
 
-namespace UniMediator 
+namespace Packages.UMediator.Runtime 
 {
     public sealed class MediatorImpl : IMediator
     {
@@ -25,16 +24,16 @@ namespace UniMediator
             return _singleMessageHandlers.Invoke(message);
         }
         
-        private void CacheMulticastMessageHandler(Type messageType, MonoBehaviour behavior, MethodInfo method)
+        private void CacheMulticastMessageHandler(Type messageType, object instance, MethodInfo method)
         {
-            var handler = _multicastMessageHandlers.CacheHandler(messageType, behavior, method);
+            var handler = _multicastMessageHandlers.CacheHandler(messageType, instance, method);
             var remover = new MulticastMessageHandlerRemover(messageType, handler, _multicastMessageHandlers);
         }
 
-        private void CacheSingletMessageHandler(Type messageType, MonoBehaviour behavior, MethodInfo method)
+        private void CacheSingletMessageHandler(Type messageType, object instance, MethodInfo method)
         {
             var returnType = messageType.GetInterfaces()[0].GenericTypeArguments[0];
-            _singleMessageHandlers.CacheHandler(messageType, returnType, behavior, method);
+            _singleMessageHandlers.CacheHandler(messageType, returnType, instance, method);
             var remover = new SingleMessageHandlerRemover(messageType, _singleMessageHandlers);
         }
     }

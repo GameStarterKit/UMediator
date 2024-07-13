@@ -1,6 +1,6 @@
 using System;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class SingleMessageHandlerRemover : IDelegateRemover
     {

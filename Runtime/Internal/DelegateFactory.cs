@@ -1,10 +1,8 @@
 using System;
-using System.Linq.Expressions;
 using System.Reflection;
-using UnityEngine;
 using static System.Reflection.BindingFlags;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     internal static class DelegateFactory
     {

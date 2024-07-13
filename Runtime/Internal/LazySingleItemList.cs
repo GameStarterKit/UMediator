@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine;
-using Object = System.Object;
 
-namespace UniMediator.Internal
+namespace Packages.UMediator.Runtime.Internal
 {
     /// <summary>
     /// Lazily allocates a List only when more than 1 item is added. Beware this
