@@ -47,11 +47,13 @@ namespace Packages.UMediator.Runtime
         
         public static void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
+            InitDefaultImplementation();
             _mediator.RegisterAssemblies(assemblies);
         }
 
-        void RegisterDiDelegate(Action<object> injectionDelegate)
+        public static void RegisterDiDelegate(Action<object> injectionDelegate)
         {
+            InitDefaultImplementation();
             _mediator.RegisterDiDelegate(injectionDelegate);
         }
     }
