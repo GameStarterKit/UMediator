@@ -7,9 +7,6 @@ namespace Packages.UMediator.Runtime
     public sealed class Mediator
     {
         private static IMediator _mediator;
-        private static List<Assembly> _registeredAssemblies;
-
-        public static IEnumerable<Assembly> RegisteredAssemblies => _registeredAssemblies;
 
         public static void Publish(IMulticastMessage message)
         {
@@ -21,7 +18,7 @@ namespace Packages.UMediator.Runtime
         {
             if (_mediator == null)
             {
-                _mediator = new MediatorImpl(_registeredAssemblies);
+                _mediator = new MediatorImpl();
             }
         }
         
@@ -44,14 +41,18 @@ namespace Packages.UMediator.Runtime
                 throw new Exception(
                     $"An {nameof(IMediator)} has been injected already or the default implementation is in use. Make sure to inject an implementation before using the Mediator.");
             }
-            // TODO: implement a way to pass the registered assemblies to the custom implementations
+
             _mediator = mediatorImpl;
         }
         
-        public static void RegisterAssembly(Assembly assembly)
+        public static void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
-            _registeredAssemblies ??= new List<Assembly> {assembly};
-            _registeredAssemblies.Add(assembly);
+            _mediator.RegisterAssemblies(assemblies);
+        }
+
+        void RegisterDiDelegate(Action<object> injectionDelegate)
+        {
+            _mediator.RegisterDiDelegate(injectionDelegate);
         }
     }
 }

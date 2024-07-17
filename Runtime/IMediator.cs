@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace Packages.UMediator.Runtime
 {
@@ -18,5 +20,8 @@ namespace Packages.UMediator.Runtime
         /// </summary>
         /// <param name="message">The message object</param>
         void Publish(IMulticastMessage message);
+
+        void RegisterAssemblies(IEnumerable<Assembly> assemblies);
+        void RegisterDiDelegate(Action<object> injectionDelegate);
     }
 }

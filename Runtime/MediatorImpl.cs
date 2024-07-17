@@ -12,6 +12,8 @@ namespace Packages.UMediator.Runtime
         private readonly MulticastMessageHandlerCache _multicastMessageHandlers = new();
         
         private static MediatorImpl _instance;
+        private IEnumerable<Assembly> _assemblies;
+        private Action<object> _injectionDelegate;
 
         private List<HandlerToMessageData> GetAllHandlersInRegisteredAssemblies(IEnumerable<Assembly> assemblies)
         {
@@ -86,12 +88,25 @@ namespace Packages.UMediator.Runtime
             public MethodInfo Method;
         }
 
-        public MediatorImpl(IEnumerable<Assembly> assemblies)
+        public void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
-            var types = GetAllHandlersInRegisteredAssemblies(assemblies);
+            _assemblies = assemblies;
+            CollectHandlers();
+        }
+
+        public void RegisterDiDelegate(Action<object> injectionDelegate)
+        {
+            _injectionDelegate = injectionDelegate;
+        }
+
+        private void CollectHandlers()
+        {
+            var types = GetAllHandlersInRegisteredAssemblies(_assemblies);
             foreach (var data in types)
             {
                 var handlerObject = Activator.CreateInstance(data.HandlerType);
+                _injectionDelegate?.Invoke(handlerObject);
+
                 if (typeof(IMulticastMessage).IsAssignableFrom(data.MessageType))
                 {
                     CacheMulticastMessageHandler(data.MessageType, handlerObject, data.Method);
@@ -102,6 +117,7 @@ namespace Packages.UMediator.Runtime
                 }
             }
         }
+
         public void Publish(IMulticastMessage message)
         {
             _multicastMessageHandlers.Invoke(message);
