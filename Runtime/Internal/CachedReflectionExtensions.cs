@@ -65,8 +65,9 @@ namespace Packages.UMediator.Runtime.Internal
             if (!_genericMethods.TryGetValue(key, out var genericMethod))
             {
                 var method = key.InstanceType.GetMethod(key.MethodName, bindingFlags);
-                genericMethod = method.MakeGenericMethod(key.GetTypeArguments());
-                _genericMethods[key ] = genericMethod;
+                var typeArgs = key.GetTypeArguments();
+                genericMethod = method?.MakeGenericMethod(typeArgs);
+                _genericMethods[key] = genericMethod;
             }
             return genericMethod;
         }

@@ -6,15 +6,47 @@ namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class SingleMessageHandlerCache
     {
-        private Dictionary<Type, object> _handlers 
-            = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, object> _handlers = new Dictionary<Type, object>();
         
-        public  void Add<TMessage, TReturn>(Func<TMessage, TReturn> handler)
+        public void Add<TMessage, TReturn>(Func<TMessage, TReturn> handler)
         {
+            if (_handlers.ContainsKey(typeof(TMessage)))
+            {
+                throw new UniMediatorException(
+                    $"A SingleMessageHandler for message type {typeof(TMessage).Name} is already registered.");
+            }
             _handlers[typeof(TMessage)] = new Func<ISingleMessage<TReturn>, TReturn>(
                 message => handler.Invoke((TMessage) message));
         }
-        
+
+        public void AddWithoutReturnType<TMessage>(Action<TMessage> handler)
+        {
+            if (_handlers.ContainsKey(typeof(TMessage)))
+            {
+                throw new UniMediatorException(
+                    $"A SingleMessageHandler for message type {typeof(TMessage).Name} is already registered.");
+            }
+
+            _handlers[typeof(TMessage)] = new Action<ISingleMessage>(
+                message => handler.Invoke((TMessage) message));
+        }
+
+        public void Invoke(ISingleMessage message)
+        {
+             AotCodeGenerator.RegisterGenericValueType();
+
+            if (!_handlers.TryGetValue(message.GetType(), out var @delegate))
+            {
+                throw new Exception($"No handler is registered for {message}");
+            }
+
+            if (! (@delegate is Action<ISingleMessage> action))
+            {
+                throw new Exception($"Handler for {message} is null");
+            }
+            action.Invoke(message);
+        }
+
         public T Invoke<T>(ISingleMessage<T> message)
         {
             AotCodeGenerator<T>.RegisterGenericValueType();
@@ -64,7 +96,7 @@ namespace Packages.UMediator.Runtime.Internal
             var handler = DelegateFactory.CreateSingleMessageHandler(messageType, returnType, instance, method);
              
             var genericMethod = GetType()
-                .GetCachedGenericMethod(nameof(Add), BindingFlags.Instance | BindingFlags.Public, messageType, returnType);
+                .GetCachedGenericMethod(returnType == typeof(void) ? nameof(AddWithoutReturnType) : nameof(Add), BindingFlags.Instance | BindingFlags.Public, messageType, returnType);
                         
             genericMethod.Invoke(this, new[] { handler });
         }

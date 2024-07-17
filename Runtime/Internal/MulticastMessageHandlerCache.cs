@@ -7,8 +7,7 @@ namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class MulticastMessageHandlerCache
     {
-        private Dictionary<Type, MutableAction<IMulticastMessage>>  _handlers 
-            = new Dictionary<Type, MutableAction<IMulticastMessage>>();
+        private readonly Dictionary<Type, MutableAction<IMulticastMessage>>  _handlers = new();
 
         public Action<IMulticastMessage> Add<TMessage>(Action<TMessage> handler)
         {
@@ -39,7 +38,7 @@ namespace Packages.UMediator.Runtime.Internal
 
             if (!_handlers.ContainsKey(key))
             {
-                Debug.LogError("UniMediator: No handlers registered for: " + key);
+                Debug.LogWarning("UniMediator: No handlers registered for: " + key);
                 return;
             }
             _handlers[key].Invoke(message);

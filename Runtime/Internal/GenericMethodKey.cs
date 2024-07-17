@@ -23,7 +23,7 @@ namespace Packages.UMediator.Runtime.Internal
 
         public Type[] GetTypeArguments()
         {
-            return TypeArgument2 == null ? new[] {TypeArgument1} : new[] {TypeArgument1, TypeArgument2};
+            return TypeArgument2 == null || TypeArgument2 == typeof(void) ? new[] {TypeArgument1} : new[] {TypeArgument1, TypeArgument2};
         }
         
         public bool Equals(GenericMethodKey other)

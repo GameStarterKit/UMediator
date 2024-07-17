@@ -22,12 +22,20 @@ namespace Packages.UMediator.Runtime.Internal
             object instance, 
             MethodInfo method)
         {
-            var methodInfo = typeof(DelegateFactory).GetCachedGenericMethod(nameof(CreateClosedFuncType), Static | NonPublic, messageType, returnType);
+            MethodInfo methodInfo = default;
+            if (returnType == typeof(void))
+            {
+                methodInfo = typeof(DelegateFactory).GetCachedGenericMethod(nameof(CreateClosedActionType), Static | NonPublic, messageType, returnType);
+            }
+            else
+            {
+                methodInfo = typeof(DelegateFactory).GetCachedGenericMethod(nameof(CreateClosedFuncType), Static | NonPublic, messageType, returnType);
+            }
             var delegateType = methodInfo.Invoke(null, null);
             return Delegate.CreateDelegate((Type)delegateType, instance, method);
         }
 
-        private static Type CreateClosedActionType<TMessage>()
+        internal static Type CreateClosedActionType<TMessage>()
         {
             return typeof(Action<TMessage>);
         }
