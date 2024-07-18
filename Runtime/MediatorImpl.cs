@@ -6,14 +6,16 @@ using UnityEngine;
 
 namespace Packages.UMediator.Runtime 
 {
-    public sealed class MediatorImpl : IMediator
+    public class MediatorImpl : IMediator
     {
-        private readonly SingleMessageHandlerCache _singleMessageHandlers = new();
-        private readonly MulticastMessageHandlerCache _multicastMessageHandlers = new();
+        protected static MediatorImpl Instance;
+
+        protected readonly SingleMessageHandlerCache SingleMessageHandlers = new();
+        protected readonly MulticastMessageHandlerCache MulticastMessageHandlers = new();
         
-        private static MediatorImpl _instance;
-        private IEnumerable<Assembly> _assemblies;
-        private Action<object> _injectionDelegate;
+        protected IEnumerable<Assembly> Assemblies;
+        protected Action<object> InjectionDelegate;
+        protected bool AreHandlersCached;
 
         private List<HandlerToMessageData> GetAllHandlersInRegisteredAssemblies(IEnumerable<Assembly> assemblies)
         {
@@ -37,20 +39,18 @@ namespace Packages.UMediator.Runtime
                         }
                         var genericType = iInterface.GetGenericTypeDefinition();
 
-                        HandlerToMessageData handlerToMessageData = default;
-
                         if (typeof(IMulticastMessageHandler<>) != genericType &&
                             typeof(ISingleMessageHandler<>) != genericType &&
                             typeof(ISingleMessageHandler<,>) != genericType)
                         {
                             continue;
                         }
-                        handlerToMessageData = GetHandlerData(type, iInterface.GenericTypeArguments);
+
+                        var handlerToMessageData = GetHandlerData(type, iInterface.GenericTypeArguments);
                         messageData.Add(handlerToMessageData);
                     }
                 }
             }
-
 
             return messageData;
         }
@@ -76,10 +76,10 @@ namespace Packages.UMediator.Runtime
                 return data;
             }
 
-            throw new Exception("Something went wrong");
+            throw new Exception("Unable to get cached methods from types.");
         }
 
-        private struct HandlerToMessageData
+        protected struct HandlerToMessageData
         {
             public Type HandlerType;
             public Type ReturnType;
@@ -88,24 +88,29 @@ namespace Packages.UMediator.Runtime
             public MethodInfo Method;
         }
 
-        public void RegisterAssemblies(IEnumerable<Assembly> assemblies)
+        public virtual void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
-            _assemblies = assemblies;
-            CollectHandlers();
+            Assemblies = assemblies;
+            CacheMessageHandlers();
         }
 
-        public void RegisterDiDelegate(Action<object> injectionDelegate)
+        public virtual void RegisterDiDelegate(Action<object> injectionDelegate)
         {
-            _injectionDelegate = injectionDelegate;
+            InjectionDelegate = injectionDelegate;
         }
 
-        private void CollectHandlers()
+        public virtual void CacheMessageHandlers()
         {
-            var types = GetAllHandlersInRegisteredAssemblies(_assemblies);
+            if (AreHandlersCached)
+            {
+                return;
+            }
+
+            var types = GetAllHandlersInRegisteredAssemblies(Assemblies);
             foreach (var data in types)
             {
                 var handlerObject = Activator.CreateInstance(data.HandlerType);
-                _injectionDelegate?.Invoke(handlerObject);
+                InjectionDelegate?.Invoke(handlerObject);
 
                 if (typeof(IMulticastMessage).IsAssignableFrom(data.MessageType))
                 {
@@ -116,33 +121,38 @@ namespace Packages.UMediator.Runtime
                     CacheSingletMessageHandler(data.MessageType, data.ReturnType, handlerObject, data.Method);
                 }
             }
+
+            AreHandlersCached = true;
         }
 
-        public void Publish(IMulticastMessage message)
+        public virtual void Publish(IMulticastMessage message)
         {
-            _multicastMessageHandlers.Invoke(message);
+            CacheMessageHandlers();
+            MulticastMessageHandlers.Invoke(message);
         }
 
-        public void Send(ISingleMessage message)
+        public virtual void Send(ISingleMessage message)
         {
-            _singleMessageHandlers.Invoke(message);
+            CacheMessageHandlers();
+            SingleMessageHandlers.Invoke(message);
         }
         
-        public T Send<T>(ISingleMessage<T> message)
+        public virtual T Send<T>(ISingleMessage<T> message)
         {
-            return _singleMessageHandlers.Invoke(message);
+            CacheMessageHandlers();
+            return SingleMessageHandlers.Invoke(message);
         }
         
         private void CacheMulticastMessageHandler(Type messageType, object instance, MethodInfo method)
         {
-            var handler = _multicastMessageHandlers.CacheHandler(messageType, instance, method);
-            var remover = new MulticastMessageHandlerRemover(messageType, handler, _multicastMessageHandlers);
+            var handler = MulticastMessageHandlers.CacheHandler(messageType, instance, method);
+            var remover = new MulticastMessageHandlerRemover(messageType, handler, MulticastMessageHandlers);
         }
 
         private void CacheSingletMessageHandler(Type messageType, Type returnType, object instance, MethodInfo method)
         {
-            _singleMessageHandlers.CacheHandler(messageType, returnType, instance, method);
-            var remover = new SingleMessageHandlerRemover(messageType, _singleMessageHandlers);
+            SingleMessageHandlers.CacheHandler(messageType, returnType, instance, method);
+            var remover = new SingleMessageHandlerRemover(messageType, SingleMessageHandlers);
         }
     }
 }

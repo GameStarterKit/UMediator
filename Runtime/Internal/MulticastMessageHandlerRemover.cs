@@ -4,9 +4,9 @@ namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class MulticastMessageHandlerRemover : IDelegateRemover
     {
-        private Type _type; 
-        private Action<IMulticastMessage> _handler;
-        private MulticastMessageHandlerCache _handlers;
+        private readonly Type _type; 
+        private readonly Action<IMulticastMessage> _handler;
+        private readonly MulticastMessageHandlerCache _handlers;
 
         public MulticastMessageHandlerRemover(
             Type type, 

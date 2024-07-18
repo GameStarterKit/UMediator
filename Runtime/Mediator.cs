@@ -44,7 +44,7 @@ namespace Packages.UMediator.Runtime
 
             _mediator = mediatorImpl;
         }
-        
+
         public static void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
             InitDefaultImplementation();

@@ -23,5 +23,6 @@ namespace Packages.UMediator.Runtime
 
         void RegisterAssemblies(IEnumerable<Assembly> assemblies);
         void RegisterDiDelegate(Action<object> injectionDelegate);
+        void CacheMessageHandlers();
     }
 }

@@ -4,8 +4,8 @@ namespace Packages.UMediator.Runtime.Internal
 {
     internal sealed class SingleMessageHandlerRemover : IDelegateRemover
     {
-        private Type _messageType;
-        private SingleMessageHandlerCache _handlers;
+        private readonly Type _messageType;
+        private readonly SingleMessageHandlerCache _handlers;
 
         public SingleMessageHandlerRemover(
             Type messageType, 

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Packages.UMediator.Runtime.Internal
 {
-    internal sealed class SingleMessageHandlerCache
+    public class SingleMessageHandlerCache
     {
         private readonly Dictionary<Type, object> _handlers = new Dictionary<Type, object>();
         

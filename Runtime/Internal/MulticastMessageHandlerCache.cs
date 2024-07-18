@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Packages.UMediator.Runtime.Internal
 {
-    internal sealed class MulticastMessageHandlerCache
+    public class MulticastMessageHandlerCache
     {
         private readonly Dictionary<Type, MutableAction<IMulticastMessage>>  _handlers = new();
 
