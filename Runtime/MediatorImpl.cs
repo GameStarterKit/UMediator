@@ -8,12 +8,10 @@ namespace Packages.UMediator.Runtime
 {
     public class MediatorImpl : IMediator
     {
-        protected static MediatorImpl Instance;
-
         protected readonly SingleMessageHandlerCache SingleMessageHandlers = new();
         protected readonly MulticastMessageHandlerCache MulticastMessageHandlers = new();
         
-        protected IEnumerable<Assembly> Assemblies;
+        protected HashSet<Assembly> Assemblies;
         protected Action<object> InjectionDelegate;
         protected bool AreHandlersCached;
 
@@ -90,8 +88,18 @@ namespace Packages.UMediator.Runtime
 
         public virtual void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
-            Assemblies = assemblies;
-            CacheMessageHandlers();
+            Assemblies ??= new HashSet<Assembly>();
+
+            foreach (var assembly in assemblies)
+            {
+                Assemblies.Add(assembly);
+            }
+        }
+
+        public virtual void RegisterAssembly(Assembly assembly)
+        {
+            Assemblies ??= new HashSet<Assembly>();
+            Assemblies.Add(assembly);
         }
 
         public virtual void RegisterDiDelegate(Action<object> injectionDelegate)
@@ -106,7 +114,15 @@ namespace Packages.UMediator.Runtime
                 return;
             }
 
-            var types = GetAllHandlersInRegisteredAssemblies(Assemblies);
+            CacheHandlersInAssemblies(Assemblies);
+            
+            AreHandlersCached = true;
+        }
+
+        private void CacheHandlersInAssemblies(IEnumerable<Assembly> assemblies)
+        {
+            var types = GetAllHandlersInRegisteredAssemblies(assemblies);
+
             foreach (var data in types)
             {
                 var handlerObject = Activator.CreateInstance(data.HandlerType);
@@ -121,8 +137,6 @@ namespace Packages.UMediator.Runtime
                     CacheSingletMessageHandler(data.MessageType, data.ReturnType, handlerObject, data.Method);
                 }
             }
-
-            AreHandlersCached = true;
         }
 
         public virtual void Publish(IMulticastMessage message)

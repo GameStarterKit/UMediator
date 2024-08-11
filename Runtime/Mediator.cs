@@ -45,6 +45,11 @@ namespace Packages.UMediator.Runtime
             _mediator = mediatorImpl;
         }
 
+        public static void RegisterAssembly(Assembly assembly)
+        {
+            InitDefaultImplementation();
+            _mediator.RegisterAssembly(assembly);
+        }
         public static void RegisterAssemblies(IEnumerable<Assembly> assemblies)
         {
             InitDefaultImplementation();
@@ -55,6 +60,12 @@ namespace Packages.UMediator.Runtime
         {
             InitDefaultImplementation();
             _mediator.RegisterDiDelegate(injectionDelegate);
+        }
+
+        public static void CacheMessageHandlers()
+        {
+            InitDefaultImplementation();
+            _mediator.CacheMessageHandlers();
         }
     }
 }
